@@ -6,7 +6,7 @@ function connect(){
    mysql.createConnection({
     host: config.HOST,
     user: config.USER,
-    // password: config.PASSWORD,
+    password: config.PASSWORD,
     database: config.DB,
   }).then(()=>{
     console.log("User connect to database")
