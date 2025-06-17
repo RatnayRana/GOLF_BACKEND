@@ -3,6 +3,8 @@ node_modules/
 
 .env
 
-src/database/config.ts
+src/database/db-config.ts
 
 
+
+/generated/prisma
