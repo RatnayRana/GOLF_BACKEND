@@ -1,4 +1,5 @@
-import userRouter from '../router/user-router';
+import userRouter from "../router/common-router/user-router";
+
 const apiConfig = {
     userRouter
 };

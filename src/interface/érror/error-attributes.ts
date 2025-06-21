@@ -6,3 +6,12 @@ export interface ErrorAttributes {
   errorStack?: string;
   loggingErrorResponse?: string;
 }
+
+export interface ErrorImp{
+  error:{
+    name:string
+    statusCode:number
+    isOperational:boolean
+
+  }
+}

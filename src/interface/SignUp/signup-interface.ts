@@ -3,7 +3,12 @@ interface SignUpAttributes {
   email: string;
   password: string;
   phone_number: string;
-  salt:string
+  salt:string,
+
 }
 
-export default SignUpAttributes
+interface DatabaseRegisterSttributes extends SignUpAttributes{
+  roleId:number
+}
+
+export {SignUpAttributes,DatabaseRegisterSttributes }

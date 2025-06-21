@@ -1,5 +1,12 @@
 interface SignInAttributes{
     email : string
     password:string
+    
 }
-export default SignInAttributes
+interface loginAttributes {
+    username: string;
+    password: string;
+    id?:number
+  }
+  
+export{SignInAttributes,loginAttributes}

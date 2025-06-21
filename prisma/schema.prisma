@@ -22,32 +22,101 @@ model Customer {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
   salt       String
-  roles         Role[]   // One customer has many roles
+ roleId        Int      @default(1)     // 👈 default to roleId = 0 (normal user)
+  role          Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  booking_golf_course    Booking_Golf_Course[] 
 }
-//Roles
+
 model Role {
   id         Int              @id @default(autoincrement())
   role_name  String           @db.VarChar(255)
-
-  customerId Int              // FK to Customer
-  customer   Customer         @relation(fields: [customerId], references: [id],onDelete: Cascade)
-
+  customers     Customer[]  
   permissions RolePermission[] // Many-to-many with Permission
 }
 
 model Permission {
   id               Int              @id @default(autoincrement())
   permission_name  String           @db.VarChar(255)
-
   roles            RolePermission[] // Many-to-many with Role
 }
 
 model RolePermission {
   id            Int         @id @default(autoincrement())
-
   roleId        Int
   permissionId  Int
-
   role          Role        @relation(fields: [roleId], references: [id],onDelete: Cascade)
   permission    Permission  @relation(fields: [permissionId], references: [id],onDelete: Cascade)
+}
+
+
+model Golf_Course{
+  id   Int   @id @default(autoincrement())
+  golf_course_name String           @db.VarChar(255)
+  golf_course_location_name String           @db.VarChar(255)
+  golf_course_location_description String           @db.VarChar(255)
+  golf_course  Booking_Golf_Course[]
+}
+
+
+enum BookingStatus {
+ cancelled
+ booked
+}
+model Booking_Golf_Course{
+  id   Int   @id @default(autoincrement())
+  
+  booking_status BookingStatus
+  date DateTime
+  
+  
+  customerId     Int
+  golfCourseId   Int
+   carrySetId     Int?   
+
+
+   customer       Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  golfCourse     Golf_Course       @relation(fields: [golfCourseId], references: [id], onDelete: Cascade)
+    carrySet       CarrySet?      @relation(fields: [carrySetId], references: [id], onDelete: Cascade) // 👈 Add this
+
+}
+enum Available{
+  available
+  not_availabel
+}
+
+model Caddie{
+  id   Int   @id @default(autoincrement())
+  caddiename String
+  availibility Boolean
+  urls      CaddieUrl[]
+
+}
+
+model CaddieUrl{
+  url      String   
+  caddieId Int
+caddie   Caddie @relation(fields: [caddieId], references: [id], onDelete: Cascade)
+
+@@id([url, caddieId])
+@@index([caddieId])
+}
+
+
+model CarrySet{
+  id   Int   @id @default(autoincrement())
+  carrysettname String
+  availibility Boolean
+  urls      CarrySetUrl[]
+  bookings       Booking_Golf_Course[] // 👈 Add this line
+
+
+}
+
+model CarrySetUrl{
+  url      String   
+ carrysetId Int
+carryset   CarrySet @relation(fields: [carrysetId], references: [id], onDelete: Cascade)
+
+@@id([url,carrysetId])
+@@index([carrysetId])
 }

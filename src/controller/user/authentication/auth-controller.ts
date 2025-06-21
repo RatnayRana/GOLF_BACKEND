@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import SignUpAttributes from "../interface/SignUp/signup-interface";
-import CustomerService from "../services/customer-service";
-import { ApiResponse } from "../utils/response-handler/response-handler";
-import { GenerateSalt } from "../utils/validation/validation";
+import { ApiResponse } from "../../../utils/response-handler/response-handler";
+import { GenerateSalt } from "../../../utils/validation/validation";
+import CustomerService from "../../../services/customer-services/authentication/customer-service";
+
 
 export class Authcontroller {
   public service = new CustomerService();
@@ -10,7 +10,7 @@ export class Authcontroller {
     this.createUser = this.createUser.bind(this);
 
     this.createLogin = this.createLogin.bind(this);
-    this.logout = this.logout.bind(this)
+    this.logout = this.logout.bind(this);
   }
   async createUser(
     req: Request,
@@ -26,14 +26,20 @@ export class Authcontroller {
         password,
         phone_number,
         salt,
+        roleId: 1,
       });
-      return res.json(data);
+      if(data){
+        return res.json(data);
+      }else{
+        console.log("hello")
+      }
+      
     } catch (error: any) {
-      next(error);
+      console.log("GH")
       return ApiResponse.error(
         res,
         error instanceof Error ? error.message : "An unexpected error occurred",
-        error.statusCode
+        500
       );
     }
   }
@@ -43,6 +49,7 @@ export class Authcontroller {
     next: NextFunction
   ): Promise<any> {
     try {
+    
       const { email, password } = req.body;
       const result = await this.service.SignIn({ email, password });
       console.log(result);
@@ -52,43 +59,48 @@ export class Authcontroller {
 
       const { data } = result;
       //   return res.json(data);
-      return ApiResponse.success(res, "Successfully logged in", 200);
+      return ApiResponse.success(res, "Successfully logged in", 200, data);
     } catch (error: any) {
-      console.log(error);
-
-      // For other errors, pass to error handler
-      next(error);
+       return ApiResponse.error(
+        res,
+        error instanceof Error ? error.message : "An unexpected error occurred",
+        500
+      );
     }
   }
   // Logout method
-   logout = async (
-    req: Request, 
-    res: Response, 
+  logout = async (
+    req: Request,
+    res: Response,
     next: NextFunction
   ): Promise<any> => {
     try {
       // Clear cookies
-      res.clearCookie("accessToken", { 
-        httpOnly: true, 
-        secure: true, 
-        sameSite: "strict" 
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
       });
-      res.clearCookie("refreshToken", { 
-        httpOnly: true, 
-        secure: true, 
-        sameSite: "strict" 
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
       });
 
       const success = await this.service.logout();
 
       if (success) {
-        return ApiResponse.success(res, 'User logged out successfully', 200, {});
+        return ApiResponse.success(
+          res,
+          "User logged out successfully",
+          200,
+          {}
+        );
       }
 
-      return ApiResponse.error(res, 'Failed to log out', 500);
+      return ApiResponse.error(res, "Failed to log out", 500);
     } catch (error: unknown) {
       next(error);
     }
-  }
-  
+  };
 }

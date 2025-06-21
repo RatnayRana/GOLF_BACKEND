@@ -11,7 +11,6 @@ const GenerateSignature = async (payload:any) => {
   try {
     return await jwt.sign(payload, APP_SECRET!, { expiresIn: "30d" });
   } catch (error) {
-    console.log(error);
     return error;
   }
 };
