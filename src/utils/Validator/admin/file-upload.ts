@@ -1,14 +1,11 @@
 import * as yup from "yup";
 
 // Define the validation schema
-const fileUploadSchema = yup.object().shape({
-  
-   urls: yup
+const schema = yup.object({
+  files: yup
     .array()
-    .of(yup.string().url("Each URL must be valid"))
-    .required("urls is required")
-    .min(1, "At least one URL is required"),
-   
+    .min(1, 'At least one file URL is required')
+    .required('Files are required'),
 });
 
-export default fileUploadSchema ;
+export default schema ;

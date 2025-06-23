@@ -22,19 +22,19 @@ class CustomerRepository {
       );
       
     }
-    // try {
-    //   const customer = await prisma.customer.create({
-    //     data: input,
-    //   });
-    //   return customer;
-    // } catch (err) {
-    //   console.log('afszvczx')
-    //   throw new APIError(
-    //     String(err),
-    //     STATUS_CODES.INTERNAL_ERROR,
-    //     "Unable to Create Customer"
-    //   );
-    // }
+    try {
+      const customer = await prisma.customer.create({
+        data: input,
+      });
+      return customer;
+    } catch (err) {
+      console.log('afszvczx')
+      throw new APIError(
+        String(err),
+        STATUS_CODES.INTERNAL_ERROR,
+        "Unable to Create Customer"
+      );
+    }
   }
 
   async FindCustomer({ email }: { email?: string }) {

@@ -9,6 +9,9 @@ import sharp from "sharp";
 import { Request, Response, NextFunction } from "express";
 import fileUploadSchema from "../Validator/admin/file-upload";
 import { ApiResponse } from "../response-handler/response-handler";
+import schema from "../Validator/admin/file-upload";
+import { APIError, AppError, STATUS_CODES } from "../../custom-error/app-error";
+import { errorHandler } from "../../middleware/errorHandler/common-errror-handler";
 
 dotenv.config();
 
@@ -30,12 +33,10 @@ export const uploadToCloudinary = async (
   res: Response,
   next: NextFunction
 ): Promise<any> => {
- 
   try {
     const files: CloudinaryFile[] = req.files as CloudinaryFile[];
-    if (!files || files.length === 0) {
-      return next(new Error("No files provided"));
-    }
+    await schema.validate({ files: files.map((file) => file.originalname) });
+
     const cloudinaryUrls: string[] = [];
     for (const file of files) {
       const resizedBuffer: Buffer = await sharp(file.buffer)
@@ -70,8 +71,11 @@ export const uploadToCloudinary = async (
       );
       uploadStream.end(resizedBuffer);
     }
-  } catch (error) {
-    next(error)
-    
+  } catch (error :unknown) {
+      return res.status(400).json({
+      status: "fail",
+      message:  "Atleast one image file should be uploaded",
+    });
+  
   }
 };

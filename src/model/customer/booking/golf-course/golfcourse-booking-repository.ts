@@ -1,13 +1,13 @@
-import { PrismaClient, Golf_Course } from "../../../../../generated/prisma";
+import { PrismaClient } from "../../../../../generated/prisma";
 import { APIError, STATUS_CODES } from "../../../../custom-error/app-error";
+import { BookingCreatedResponseAttributes } from "../../../../interface/booking/extract-booking";
 import { BookingInput } from "../../../../interface/booking/golfcourse-booking";
 
 const prisma = new PrismaClient();
 
 class GolfCourseBookingRepository {
-  async createGolfCourseBooking(input: BookingInput): Promise<any | string> {
+  async createGolfCourseBooking(input: BookingInput): Promise<BookingCreatedResponseAttributes> {
     const { date, golfCourseId, customerId, carrySetId } = input;
-    console.log("customerID", customerId, golfCourseId, carrySetId);
     if (!date) {
       throw new APIError(
         "Missing date",
@@ -36,7 +36,6 @@ class GolfCourseBookingRepository {
         id: input.carrySetId,
       },
     });
-    console.log("Carry Set",carrySet)
     if (!carrySet) {
       throw new APIError(
         "Golf Ground does not exist",
@@ -46,7 +45,6 @@ class GolfCourseBookingRepository {
     }
 
     if (!carrySet?.availibility) {
-      console.log("hyyhyhy")
       throw new APIError(
         "Carry Set is not available",
         STATUS_CODES.BAD_REQUEST,
@@ -56,14 +54,13 @@ class GolfCourseBookingRepository {
 
     const existingBooking = await prisma.booking_Golf_Course.findFirst({
       where: {
-        booking_status:'booked',
+        booking_status: "booked",
         date: {
           gte: start,
           lte: end,
         },
       },
     });
-    console.log(existingBooking)
 
     if (existingBooking) {
       throw new APIError(
@@ -101,10 +98,9 @@ class GolfCourseBookingRepository {
         data: { availibility: false },
       });
 
-      console.log("Booking created:", booking);
+      
       return booking;
     } catch (error) {
-      console.log("Error creating booking:", error);
       throw new APIError(
         String(error),
         STATUS_CODES.INTERNAL_ERROR,
@@ -121,7 +117,6 @@ class GolfCourseBookingRepository {
         where: { id: bookingId },
         include: { carrySet: true },
       });
-      console.log("hyhyhyhyhgdgagag",booking?.carrySet)
       if (!booking) {
         throw new APIError("Booking not found", STATUS_CODES.NOT_FOUND);
       }
@@ -135,7 +130,6 @@ class GolfCourseBookingRepository {
         where: { id: bookingId },
         data: { booking_status: "cancelled" },
       });
-      console.log("Cancellatiuon of booking ",cancelledBooking)
       if (booking.carrySetId) {
         await prisma.carrySet.update({
           where: { id: booking.carrySetId },
