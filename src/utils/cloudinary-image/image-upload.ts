@@ -7,11 +7,8 @@ import {
 } from "cloudinary";
 import sharp from "sharp";
 import { Request, Response, NextFunction } from "express";
-import fileUploadSchema from "../Validator/admin/file-upload";
-import { ApiResponse } from "../response-handler/response-handler";
 import schema from "../Validator/admin/file-upload";
-import { APIError, AppError, STATUS_CODES } from "../../custom-error/app-error";
-import { errorHandler } from "../../middleware/errorHandler/common-errror-handler";
+
 
 dotenv.config();
 
@@ -57,7 +54,6 @@ export const uploadToCloudinary = async (
             return next(err);
           }
           if (!result) {
-            console.error("Cloudinary upload error: Result is undefined");
             return next(new Error("Cloudinary upload result is undefined"));
           }
           cloudinaryUrls.push(result.secure_url);

@@ -1,5 +1,4 @@
-import { json } from "stream/consumers";
-import { PrismaClient, Customer } from "../../../../generated/prisma";
+import { PrismaClient } from "../../../../generated/prisma";
 import { APIError, STATUS_CODES } from "../../../custom-error/app-error";
 import { DatabaseRegisterSttributes } from "../../../interface/SignUp/signup-interface";
 // Customer

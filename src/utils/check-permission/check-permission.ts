@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiResponse } from "../response-handler/response-handler";
-import RolePermissionHandler from "../../middleware/authorize-user/authorize-user";
 import { RolePermissionRepository } from "../../model/admin/role-repository/role-repository";
 
 export const checkPermission = (requirePermission: string) => {
